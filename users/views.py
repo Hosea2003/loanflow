@@ -1,3 +1,15 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from users.models import AppUser
+from users.permissions import CanViewUser
+from users.serializers import CreateUserSerializer, DetailsUserSerializer
+from rest_framework.permissions import IsAuthenticated
+
+class RegisterUserView(generics.CreateAPIView):
+    serializer_class = CreateUserSerializer
+    
+class UserDetailsView(generics.RetrieveAPIView):
+    lookup_field="id"
+    queryset = AppUser.objects.all()
+    permission_classes = [IsAuthenticated, CanViewUser]
+    serializer_class = DetailsUserSerializer

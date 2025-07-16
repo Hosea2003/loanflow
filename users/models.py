@@ -64,31 +64,14 @@ class AppUser(AbstractUser):
         verbose_name = "Loanflow User"
 
 def generate_iban(country_code="MG", bank_code="12345678", account_number_length=10):
-    """
-    Generate a valid IBAN for a given country code, bank code, and account number length.
-    
-    Args:
-        country_code (str): Two-letter country code (e.g., 'DE' for Germany)
-        bank_code (str): Bank code (typically 8 digits)
-        account_number_length (int): Length of the account number
-    
-    Returns:
-        str: Valid IBAN
-    """
     account_number = ''.join(random.choices(string.digits, k=account_number_length))
-    
     bban = bank_code + account_number
-    
     check_string = bban + country_code + "00"
-    check_string = ''.join(str(int(c) + 10 if c.isalpha() else c) for c in check_string.upper())
-    
+    check_string = ''.join(str(ord(c) - 55) if c.isalpha() else c for c in check_string.upper())
     check_num = int(check_string)
     check_digits = 98 - (check_num % 97)
-    
     check_digits = f"{check_digits:02d}"
-    
     iban = f"{country_code}{check_digits}{bban}"
-    
     return iban
 
 def validate_iban(iban):
@@ -118,7 +101,8 @@ def validate_iban(iban):
 class Account(models.Model):
     owner = models.ForeignKey(
         AppUser,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='accounts'
     )
     iban = models.CharField(max_length=50, null=False, blank=False)
     balance = models.DecimalField(
