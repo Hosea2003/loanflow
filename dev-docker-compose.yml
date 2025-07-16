@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - data:/var/lib/postgresql/data
+    restart: always
+    container_name: loanflow-db
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - 5433:5432
+
+  http:
+    build: .
+    container_name: loanflow
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - DATABASE=postgres
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    command: python3 manage.py runserver 0.0.0.0:8000
+
+volumes:
+  data:
