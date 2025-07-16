@@ -21,6 +21,8 @@ DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL='users.AppUser'
+
 
 # Application definition
 
