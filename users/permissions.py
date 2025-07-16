@@ -8,3 +8,8 @@ class CanViewUser(BasePermission):
         if user.role==AppUser.AppUserRoles.CONSULTANT:
             return True
         return obj.id==user.id
+
+class IsConsultant(BasePermission):
+    def has_permission(self, request, view):
+        user:AppUser = request.user
+        return user.role==AppUser.AppUserRoles.CONSULTANT
