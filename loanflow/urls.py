@@ -20,5 +20,6 @@ urlpatterns = [
         name="redoc-view"
     ),
     # apps
-    path('api/user/', include('users.urls'))
+    path('api/user/', include('users.urls')),
+    path("api/account/", include("account.urls"))
 ]

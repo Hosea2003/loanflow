@@ -15,14 +15,33 @@ class TransactionStatus(models.TextChoices):
     COMPLETED = "COMPLETED", "Completed"
     FAILED = "FAILED", "Failed"
 
+class TransactionType(models.TextChoices):
+    TRANSFER = "TRANSFER", "Transfer"
+    DEPOSIT = "DEPOSIT", "Deposit"
+    WITHDRAWAL = "WITHDRAWAL", "Withdrawal"
+    PAYMENT = "PAYMENT", "Payment"
+    FEE = "FEE", "Fee"
+    REFUND = "REFUND", "Refund"
+
 class Transaction(models.Model):
+    type = models.CharField(
+        max_length=30,
+        choices=TransactionType.choices,
+        default=TransactionType.TRANSFER
+    )
     sender = models.ForeignKey(
         Account,
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_transactions",
     )
     receiver = models.ForeignKey(
         Account,
-        on_delete=models.CASCADE
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="received_transactions"
     )
     amount = models.DecimalField(
         decimal_places=2,
