@@ -25,3 +25,26 @@ class LoanRetrieveView(generics.RetrieveAPIView):
     queryset = Loan.objects.all()
     serializer_class = LoanSerializer
     permission_classes = [IsAuthenticated, IsConsultantOrOwner]
+
+class LoanApproveDenyView(generics.UpdateAPIView):
+    queryset = Loan.objects.all()
+    serializer_class = LoanSerializer
+    permission_classes = [IsAuthenticated, IsConsultant]
+
+    def update(self, request, *args, **kwargs):
+        loan = self.get_object()
+        action = request.data.get("action")
+
+        if action not in ["accept", "deny"]:
+            return Response({"detail": "Invalid action."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if loan.status != LoanStatus.PENDING:
+            return Response({"detail": "Loan already processed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if action == "accept":
+            loan.status = LoanStatus.ACCEPTED
+        else:
+            loan.status = LoanStatus.DENIED
+
+        loan.save()
+        return Response(self.get_serializer(loan).data)
