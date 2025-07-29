@@ -21,5 +21,6 @@ urlpatterns = [
     ),
     # apps
     path('api/user/', include('users.urls')),
-    path("api/account/", include("account.urls"))
+    path("api/account/", include("account.urls")),
+    path("api/loan/", include("loan.urls"))
 ]
