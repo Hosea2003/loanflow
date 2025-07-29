@@ -4,6 +4,9 @@ from account.models import Beneficiary
 from account.permissions import IsClient
 from account.serializers import AccountSerializer, BeneficiarySerializer
 from rest_framework.permissions import IsAuthenticated
+from account.serializers import TransferSerializer
+from rest_framework.response import Response
+from rest_framework import status
 
 class BeneficiaryView(generics.ListAPIView):
     serializer_class = BeneficiarySerializer
@@ -26,3 +29,17 @@ class AddBeneficiaryView(generics.CreateAPIView):
 class ListAccountView(generics.ListAPIView):
     serializer_class = AccountSerializer
     permission_classes = [IsAuthenticated, IsClient]
+
+class TransferView(generics.GenericAPIView):
+    serializer_class = TransferSerializer
+    permission_classes = [IsAuthenticated, IsClient]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        transaction = serializer.save()
+        return Response(
+            TransferSerializer(transaction).data,
+            status=status.HTTP_201_CREATED
+        )
+#
