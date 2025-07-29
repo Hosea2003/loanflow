@@ -11,6 +11,13 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - 5433:5432
+  
+  redis:
+    image: redis:7
+    container_name: loanflow-redis
+    restart: always
+    ports:
+      - 6379:6379
 
   http:
     build: .
@@ -28,6 +35,18 @@ services:
       - SQL_HOST=db
       - SQL_PORT=5432
     command: python3 manage.py runserver 0.0.0.0:8000
+
+  celery:
+    build: .
+    container_name: loanflow-celery
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: celery -A loanflow worker --loglevel=info
 
 volumes:
   data:
