@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     #apps
     'users',
     'account',
+    'loan',
     #third party
     'drf_spectacular',
     'rest_framework',
